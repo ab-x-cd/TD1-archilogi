@@ -1,8 +1,14 @@
 <?php
+    // Load environment configuration
+    require_once 'config.php';
+    
     // Ouvre la connexion à la base de données
     function openConnection()
     {
-        $link = mysqli_connect('mysql-[compte].alwaysdata.net', '[compte]_annonces', 'pwd', '[compte]_annonces_db');
+        $link = mysqli_connect(DB_HOST, DB_USER, DB_PASS, DB_NAME);
+        if (!$link) {
+            die('Connection failed: ' . mysqli_connect_error());
+        }
         return $link;
     }
 
