@@ -33,5 +33,5 @@ INSERT INTO Users (login, password) VALUES
 -- Insert sample posts
 INSERT INTO Post (title, body, date, user_id) VALUES
     ('Premier article', 'Ceci est le contenu du premier article de blog.', '2024-01-15 10:00:00', 1),
-    ('Deuxième article', 'Voici un autre article intéressant.', '2024-01-16 14:30:00', 1),
+    ('Deuxieme article', 'Voici un autre article intéressant.', '2024-01-16 14:30:00', 1),
     ('Article sur PHP', 'PHP est un langage de programmation côté serveur.', '2024-01-17 09:15:00', 2);

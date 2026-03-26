@@ -28,6 +28,8 @@ services:
       - mysql
     networks:
       - tdtp_network
+    env_file:
+      - .env
 
   phpmyadmin:
     image: phpmyadmin:latest
