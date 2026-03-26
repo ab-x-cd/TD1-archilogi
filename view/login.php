@@ -1,7 +1,7 @@
 <?php $title= 'Exemple Annonces Basic PHP: Connexion'; ?>
 
 <?php ob_start(); ?>
-    <form method="post" action="annonces.php">
+    <form method="post" action="/annonces/index.php/annonces">
         <label for="login"> Votre identifiant </label> :
         <input type="text" name="login" id="login" placeholder="defaut" maxlength="12" required />
         <br />
