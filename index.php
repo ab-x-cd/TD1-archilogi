@@ -9,7 +9,8 @@
     
     include "Model.php";
     include "Controllers.php";
-
+    include "Post.php";
+    include "User.php";
 try {
     // construction du modèle avec les identifiants du .env
     $dsn = 'mysql:host=' . $env['DB_HOST'] . ';dbname=' . $env['DB_NAME'];
@@ -36,7 +37,7 @@ if ('/annonces/' === $uri || '/annonces/index.php' === $uri) {
 }
 
 elseif ( '/annonces/index.php/annonces' === $uri && isset($_POST['password'])) {
-    $controller->annoncesAction($_POST['login'], $_POST['password']);
+    $controller->annoncesAction($_POST['login'], $_POST['password'], $data);
 }
 
 elseif ( '/annonces/index.php/annonces' === $uri && isset($_SESSION['login'])) {
@@ -46,5 +47,5 @@ elseif ( '/annonces/index.php/annonces' === $uri && isset($_SESSION['login'])) {
 }
 
 elseif ( '/annonces/index.php/post' == $uri && isset($_GET['id'])) {
-    $controller->postAction($_GET['id']);
+    $controller->postAction($_GET['id'], $data);
 }

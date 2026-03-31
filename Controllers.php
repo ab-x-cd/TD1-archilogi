@@ -2,42 +2,39 @@
 include_once "view/ViewLogin.php";
 include_once "view/ViewAnnonces.php";
 include_once "view/ViewPost.php";
+include_once "AnnoncesChecking.php";
 
 class Controllers
 {
-    protected $data;
-
-    public function __construct($data)
-    {
-        $this->data = $data;
-    }
-
     public function loginAction()
     {
-        $layout = new Layout('view/layout.html');
-        $vueLogin = new ViewLogin($layout);
+        $layout = new Layout("view/layout.html" );
+        $vueLogin = new ViewLogin( $layout );
+
+        $vueLogin->display();
     }
 
-    public function annoncesAction( $login, $password)
+    public function annoncesAction($login, $password, $data)
     {
-        $annonces = null;
-        if($this->data->isUser($login, $password)) {
-            $annonces = $this->data->getAllAnnonces();
-        }
-        $layout = new Layout('view/layout.html');
-        $vueAnnonces = new ViewAnnonces($layout, $login, $annonces);
+        $annoncesTxt = null;
+        if ( AnnoncesChecking::authenticate($login, $password, $data) )
+            $annoncesTxt = AnnoncesChecking::getAllAnnonces($data);
+        else
+            $login = '';
+
+        $layout = new Layout("view/layout.html" );
+        $vueAnnonces= new ViewAnnonces( $layout, $login, $annoncesTxt );
 
         $vueAnnonces->display();
     }
 
-    public function postAction($id)
+    public function postAction($id, $data)
     {
-        $post = $this->data->getPost($id);
-        $layout = new Layout('view/layout.html');
-        $vuePost = new ViewPost($layout, $post);
+        $postTxt = AnnoncesChecking::getPost($id, $data);
+
+        $layout = new Layout("view/layout.html" );
+        $vuePost= new ViewPost( $layout, $postTxt );
 
         $vuePost->display();
     }
 }
-
-?>

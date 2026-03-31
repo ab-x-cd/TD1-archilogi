@@ -16,48 +16,46 @@
             $this->dataAccess = null;
         }
 
-        // Vérifie si l'utilisateur existe
-        public function isUser( $login, $password )
+        public function getUser($login, $password)
         {
-            $isuser = False;
-        
-            $query = 'SELECT login FROM Users WHERE login = :login AND password = :password';
-            $stmt = $this->dataAccess->prepare($query);
-            $stmt->execute([':login' => $login, ':password' => $password]);
-        
-            if( $stmt->rowCount() > 0 )
-                $isuser = True;
-        
-            $stmt->closeCursor();
-        
-            return $isuser;
+            $user = null;
+
+            $query = 'SELECT login FROM Users WHERE login="' . $login . '" and password="' . $password . '"';
+            $result = $this->dataAccess->query($query);
+
+            if ($result->rowCount())
+                $user = new User($login, $password);
+
+            $result->closeCursor();
+
+            return $user;
         }
 
-        // Récupère toutes les annonces
         public function getAllAnnonces()
         {
-            $stmt = $this->dataAccess->prepare('SELECT id, title FROM Post');
-            $stmt->execute();
+            $result = $this->dataAccess->query('SELECT * FROM Post');
             $annonces = array();
-        
-            while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $annonces[] = $row;
+
+            while ($row = $result->fetch()) {
+                $currentPost = new Post($row['id'], $row['title'], $row['body'], $row['date']);
+                $annonces[] = $currentPost;
             }
-        
-            $stmt->closeCursor();
-        
+
+            $result->closeCursor();
+
             return $annonces;
         }
 
-        // Récupère un post
-        public function getPost( $id )
+        public function getPost($id)
         {
             $id = intval($id);
-            $stmt = $this->dataAccess->prepare('SELECT * FROM Post WHERE id = :id');
-            $stmt->execute([':id' => $id]);
-            $post = $stmt->fetch(PDO::FETCH_ASSOC);
-        
-            $stmt->closeCursor();
+            $result = $this->dataAccess->query('SELECT * FROM Post WHERE id=' . $id);
+            $row = $result->fetch();
+            
+            $post = new Post($row['id'], $row['title'], $row['body'], $row['date']);
+            
+            $result->closeCursor();
+
             return $post;
         }
     }
