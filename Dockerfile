@@ -1,7 +1,8 @@
 FROM php:8.5-apache
 
-# Install mysqli extension
-RUN docker-php-ext-install mysqli && docker-php-ext-enable mysqli
+# Install mysqli and PDO MySQL extensions
+RUN docker-php-ext-install mysqli pdo_mysql && \
+    docker-php-ext-enable mysqli pdo_mysql
 
 # Enable Apache mod_rewrite
 RUN a2enmod rewrite
@@ -18,4 +19,5 @@ RUN echo '<Directory /var/www/html/annonces>\n\
 RUN chown -R www-data:www-data /var/www/html/
 
 # Expose port 80
+EXPOSE 80
 EXPOSE 80

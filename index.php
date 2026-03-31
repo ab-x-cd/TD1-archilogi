@@ -1,41 +1,50 @@
 <?php
+    // Charger les variables d'environnement (.env dans le même répertoire)
+    $envPath = __DIR__ . '/.env';
+    $env = parse_ini_file($envPath);
+    
+    if (!$env) {
+        die("Impossible de charger le fichier .env depuis: " . $envPath);
+    }
+    
+    include "Model.php";
+    include "Controllers.php";
 
-session_start();
+try {
+    // construction du modèle avec les identifiants du .env
+    $dsn = 'mysql:host=' . $env['DB_HOST'] . ';dbname=' . $env['DB_NAME'];
+    $pdo = new PDO($dsn, $env['DB_USER'], $env['DB_PASSWORD']);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    $data = new Model($pdo);
 
-require_once 'model.php';
-require_once 'controllers.php';
+    // initialisation du controller
+    $controller = new Controllers($data);
+
+} catch (PDOException $e) {
+    print "Erreur de connexion !: " . $e->getMessage() . "<br/>";
+    die();
+}
+
 $uri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 
-// route la requête en interne
-// i.e. lance le bon contrôleur en focntion de la requête effectuée
-if ( '/annonces/' == $uri || '/annonces/index.php' == $uri || '/' == $uri) {
-    loginAction();
-}
-elseif ( '/annonces/index.php/annonces' == $uri ) {
-    if( isset($_POST['login']) && isset($_POST['password']) ){
-        // Connexion via formulaire POST
-        annoncesAction($_POST['login'], $_POST['password']);
-    }
-    elseif( isset($_SESSION['login']) && $_SESSION['login'] != '' ){
-        // Accès aux annonces via session (après redirection ou retour)
-        $login = $_SESSION['login'];
-        $annonces = getAllAnnonces();
-        require 'view/annonces.php';
-    }
-    else {
-        // Pas connecté, retour à la page de login
-        header("Location: /annonces/index.php");
-        exit;
-    }
-}
-elseif ( '/annonces/index.php/post' == $uri
-            && isset($_GET['id'])) {
+// echo $uri;
+// echo '/annonces/index.php/annonces' === $uri;
 
-    postAction($_GET['id']);
-}
-else {
-    header('Status: 404 Not Found');
-    echo '<html><body><h1>My Page NotFound</h1></body></html>';
+if ('/annonces/' === $uri || '/annonces/index.php' === $uri) {
+    $controller->loginAction();
 }
 
-?>
+elseif ( '/annonces/index.php/annonces' === $uri && isset($_POST['password'])) {
+    $controller->annoncesAction($_POST['login'], $_POST['password']);
+}
+
+elseif ( '/annonces/index.php/annonces' === $uri && isset($_SESSION['login'])) {
+    $login = $_SESSION['login'];
+    $annonces = $data->getAllAnnonces();
+    require 'view/annonces.php';
+}
+
+elseif ( '/annonces/index.php/post' == $uri && isset($_GET['id'])) {
+    $controller->postAction($_GET['id']);
+}
